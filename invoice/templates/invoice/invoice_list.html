@@ -637,6 +637,7 @@
         $('#invoice_modal').modal('show'); 
     })
     $('#discard').click(function(){
+        $('input').attr('required', false);
         $('#invoice_modal').modal('hide'); 
     })
     $('#item_total_hidden').hide()
@@ -644,9 +645,11 @@
         $('.item_list_div').append($('.item_list_div').html())
     })
     $('#save_as_draft').click(function(){
+      $('input').attr('required', false);
         $(this).val('save_as_draft')
     })
     $('#save_main').click(function(){
+      $('input').attr('required', true);
         $(this).val('save_main')
         const total_array = [];
         $(".item_total").each(function(){
