@@ -3,11 +3,23 @@
 {% block content %}
 
   <h1 class="page-header" style="color:#f8f8fb">Invoice</h1>
-  <p style="float:right;">
+  <p style="display:flex;float:right;">
     <button type="button" class="btn btn-primary js-create-invoice" style="background:#7c5dfa; border-radius:15px; border-color:#7c5dfa">
       <span class="glyphicon glyphicon-plus"></span>
       Create Invoice
     </button>
+    <div class="dropdown">
+        <button type="button" id = filter_status class="btn btn-primary filter_status" style="background:#141625; border-radius:15px; border-color:#7c5dfa; border:0px !important; margin-right:20px;">
+            Filter by status
+        </button>
+        <div id="myDropdown" class="dropdown-content">
+            <a href="#Draft" id="draft" name="draft">Draft
+            </a>
+            <a href="#Pending" id = "pending" name="pending">Pending</a>
+            <a href="#Paid" id ="paid" name ="paid">Paid</a>
+            <a href="#allinvoice" id ="all" name ="all">All</a>
+        </div>
+    </div>
   </p>
   <table class="table table-dark borderless table-hover " id="invoice-table">
     <thead class="thead-dark">
@@ -37,7 +49,7 @@
         <tr>
           <td colspan="7" class="text-center bg-warning">There is Nothing here,
             Create an invoice by clicking on the New Invoice and get started
-            
+
         </td>
         </tr>
         <img src="invoice/illustration-empty.svg" alt="" >
@@ -51,7 +63,7 @@
         <div class="modal fade" id="invoice_modal">
           <div class="modal-dialog">
             <div class="modal-content">
-              <form method="POST" style="background-color: #141625; color:#f8f8fb; padding:25px;" >
+              <form id="create_invoice_form" method="POST" style="background-color: #141625; color:#f8f8fb; padding:25px;" >
                   {% csrf_token %}
                   <div style="padding-bottom: 18px;font-size : 24px; color:#7c5dfa;">Bill From</div>
                   
@@ -605,7 +617,12 @@
       
                   </div>
                   <div id="item_total_hidden" name="item_total_hidden" >
-                      <input type="number" id="sum_item_total" name="sum_item_total" style="max-width: 100%;" class="form-control item_total_hidden"/>
+                        <input type="text" id="form_draft" name="form_draft"  class="form-control "/>
+                        <input type="text" id="form_pending" name="form_pending"  class="form-control item_total_hidden"/>
+                        <input type="text" id="form_paid" name="form_paid" class="form-control item_total_hidden"/>
+                        <input type="text" id="form_all" name="form_all" class="form-control item_total_hidden"/>
+                        
+                        <input type="number" id="sum_item_total" name="sum_item_total" style="max-width: 100%;" class="form-control item_total_hidden"/>
                   </div>
                   
                   <div style = "display:flex; padding-bottom: 18px;">
@@ -630,26 +647,47 @@
       </div>
     </div>
   </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
 </script>
 <script>
+    //show filter menu
+    $('.filter_status').click(function(){
+        $('#myDropdown').show();
+
+    })
+    // Close the dropdown if the user clicks outside of it
+    $(window).click(function() {
+        //Hide the menus if visible
+        var $target = $(event.target);
+        if(!$target.closest('#filter_status').length && 
+            $('#myDropdown').is(":visible")) {
+            $('#myDropdown').hide();
+        }   
+    });
+    //show invoice modal
     $('.js-create-invoice').click(function(){
         $('#invoice_modal').modal('show'); 
     })
+
     $('#discard').click(function(){
-        $('input').attr('required', false);
-        $('#invoice_modal').modal('hide'); 
+        $('#invoice_modal').modal('hide');
+        $('input').attr('required', false); 
     })
+
     $('#item_total_hidden').hide()
+
     $('#add_item').click(function(){
         $('.item_list_div').append($('.item_list_div').html())
     })
+    //save_as_draft_button
     $('#save_as_draft').click(function(){
-      $('input').attr('required', false);
         $(this).val('save_as_draft')
+        $('input').attr('required', false);
     })
+
+    //save_and send_button
     $('#save_main').click(function(){
-      $('input').attr('required', true);
+        $('input').attr('required', true);
         $(this).val('save_main')
         const total_array = [];
         $(".item_total").each(function(){
@@ -657,6 +695,27 @@
         });
         var total = total_array.reduce((a,b)=> a+b,0);
         $('#sum_item_total').val(total)
+    })
+
+
+    $('#draft').click(function(){
+        $('#form_draft').val('draft')
+        $('#create_invoice_form').submit()
+    })
+
+
+    $('#pending').click(function(){
+        $('#form_pending').val('pending')
+        $('#create_invoice_form').submit()
+    })
+
+    $('#paid').click(function(){
+        $('#form_paid').val('paid')
+        $('#create_invoice_form').submit()
+    })
+    $('#all').click(function(){
+        $('#form_all').val('all')
+        $('#create_invoice_form').submit()
     })
 </script>
 {% endblock %}
