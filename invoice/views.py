@@ -8,9 +8,24 @@ from .models import Invoice,clientAddress,Items,senderAddress
 
   
 def invoice_list(request):
-    invoice_list = Invoice.objects.all()
-    context = {'invoices': invoice_list}
     
+    
+    #filter invoices
+    if request.POST.get('form_draft'):
+        #get only draft invoices
+        invoice_list = Invoice.objects.filter(status='Draft')
+    elif request.POST.get('form_pending'):
+        #get only draft invoices
+        invoice_list = Invoice.objects.filter(status='Pending')
+    elif request.POST.get('form_paid'):
+        #get only draft invoices
+        invoice_list = Invoice.objects.filter(status='Paid')
+    elif request.POST.get('form_all'):
+        #get only draft invoices
+        invoice_list = Invoice.objects.all()
+    else:
+        invoice_list = Invoice.objects.all()
+    context = {'invoices': invoice_list}
     
     "get form data and create invoice in the database "
     template = loader.get_template('invoice/invoice_list.html')
